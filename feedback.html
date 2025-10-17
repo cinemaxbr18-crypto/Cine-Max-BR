@@ -48,6 +48,7 @@
         .feedback-btn { background-color: transparent; border: 2px solid var(--border-color); color: var(--text-light); font-size: 3em; width: 120px; height: 120px; border-radius: 50%; cursor: pointer; transition: all 0.3s ease; display: flex; justify-content: center; align-items: center; }
         .feedback-btn:hover { transform: scale(1.1); border-color: var(--secondary-color); }
         .feedback-btn.selected { transform: scale(1.1); }
+        /* CORREÇÃO APLICADA: Estas classes de cor agora serão ativadas */
         .feedback-btn.like.selected { background-color: var(--success-color); border-color: var(--success-color); }
         .feedback-btn.dislike.selected { background-color: var(--danger-color); border-color: var(--danger-color); }
         .comment-section { margin-bottom: 30px; }
@@ -75,7 +76,7 @@
                 </button>
             </div>
 
-            <input type="hidden" name="avaliacao_e_filme" id="avaliacaoInput">
+            <input type="hidden" name="avaliacao_e_filme" id="avaliacaoInput" value="">
             <input type="hidden" name="destino_final_url" id="destinoFinalUrl">
             
             <div class="comment-section">
@@ -89,15 +90,13 @@
     </form>
 
     <script>
-        // Mapa de links de destino (Google Drive) - ATUALIZADO COM SEUS LINKS
+        // CORREÇÃO: Removida a declaração duplicada de const DESTINO_URLS
+        // O redirecionamento agora aponta para o player.html
         const DESTINO_URLS = {
-            // SUBSTITUA ESTE BLOCO NO SEU feedback.html
-const DESTINO_URLS = {
-    // Redireciona para o player.html, passando o ID do filme
-    'filme1': 'player.html?id=filme1', 
-    'filme2': 'player.html?id=filme2',
-    'filme3': 'player.html?id=filme3',
-    'filme4': 'player.html?id=filme4'
+            'filme1': 'player.html?id=filme1', 
+            'filme2': 'player.html?id=filme2',
+            'filme3': 'player.html?id=filme3',
+            'filme4': 'player.html?id=filme4'
         };
 
         // 1. CAPTURA QUAL FILME O USUÁRIO QUER VER
@@ -109,6 +108,7 @@ const DESTINO_URLS = {
         const dislikeBtn = document.getElementById('dislikeBtn');
         const avaliacaoInput = document.getElementById('avaliacaoInput');
         const destinoFinalUrl = document.getElementById('destinoFinalUrl');
+        const commentBox = document.getElementById('commentBox'); // Captura a caixa de comentário
         const form = document.getElementById('feedbackForm');
 
         // Preenche o campo oculto com a URL real de destino
@@ -116,32 +116,41 @@ const DESTINO_URLS = {
             destinoFinalUrl.value = DESTINO_URLS[destinoParam];
         }
 
-        // 3. ATUALIZA A LÓGICA DE CLIQUE
+        // 3. ATUALIZA A LÓGICA DE CLIQUE (AS CORES VOLTAM A FUNCIONAR AQUI)
         function atualizarAvaliacao(tipo) {
             const filmeNome = destinoParam === 'filme1' ? 'Bumblebee' :
                               destinoParam === 'filme2' ? 'Velozes & Furiosos' :
-                              destinoParam === 'filme3' ? 'Max Steel' : 'Página';
+                              destinoParam === 'filme3' ? 'Max Steel' : 
+                              destinoParam === 'filme4' ? 'The Beekeeper' : 'Página';
+            // Preenche o campo oculto. Se o usuário clicar, ele não está mais vazio.
             avaliacaoInput.value = `${tipo} - Filme: ${filmeNome}`;
         }
 
         likeBtn.addEventListener('click', () => {
-            likeBtn.classList.add('selected');
+            likeBtn.classList.add('selected'); // Adiciona verde
             dislikeBtn.classList.remove('selected');
             atualizarAvaliacao('Gostei');
         });
 
         dislikeBtn.addEventListener('click', () => {
-            dislikeBtn.classList.add('selected');
+            dislikeBtn.classList.add('selected'); // Adiciona vermelho
             likeBtn.classList.remove('selected');
             atualizarAvaliacao('Não Gostei');
         });
 
         // 4. LÓGICA DE REDIRECIONAMENTO IMEDIATO APÓS O ENVIO (AJAX/Fetch)
         form.addEventListener('submit', async function(e) {
-            e.preventDefault(); // Impede o envio padrão para que possamos enviar via JS
+            e.preventDefault(); // Impede o envio padrão
 
+            // Validação para evitar o erro do Formspree
             if (!avaliacaoInput.value) {
                 alert('Por favor, selecione uma das opções (👍 ou 👎) antes de enviar.');
+                return;
+            }
+            
+            // Validação para o comentário (opcional, mas recomendado)
+            if (commentBox.value.trim() === '') {
+                alert('Por favor, escreva um comentário na caixa abaixo antes de enviar.');
                 return;
             }
 
@@ -151,7 +160,6 @@ const DESTINO_URLS = {
             
             // 1. Envia o Feedback (em segundo plano)
             try {
-                // Tenta enviar o formulário para o Formspree
                 const response = await fetch(formURL, {
                     method: 'POST',
                     body: formData,
@@ -160,19 +168,18 @@ const DESTINO_URLS = {
                     }
                 });
                 
-                // Verifica se a requisição foi bem-sucedida (status 200 a 299)
                 if (response.ok) {
                     alert("Obrigado pelo seu feedback! Redirecionando para o seu filme...");
-                    // 2. Redireciona o usuário para o Google Drive
+                    // 2. Redireciona o usuário para o player.html
                     window.location.href = linkFilme; 
                 } else {
-                    // Se o Formspree retornou um erro (ex: problema de limite), ainda redireciona
+                    // Se o Formspree der erro por algum motivo, ainda redireciona o usuário
                     alert("Erro ao salvar o feedback, mas você será redirecionado para o filme.");
                     window.location.href = linkFilme;
                 }
 
             } catch (error) {
-                // Em caso de falha de rede/conexão, ainda redireciona o usuário
+                // Em caso de falha de rede/conexão, ainda redireciona
                 console.error('Falha na conexão ao enviar feedback:', error);
                 alert("Erro de conexão ao salvar o feedback. Redirecionando para o filme.");
                 window.location.href = linkFilme; 
