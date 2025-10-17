@@ -91,9 +91,12 @@
     <script>
         // Mapa de links de destino (Google Drive) - ATUALIZADO COM SEUS LINKS
         const DESTINO_URLS = {
-            'filme1': 'https://drive.google.com/file/d/17ys7I27Wo4Y1L2zOcpYEHlukdq1Wvx9M/view?usp=drive_link', 
-            'filme2': 'https://drive.google.com/file/d/1UPppEIZfcvkt57XqkuPr6BEvXPoTKH_8/view?usp=drive_link',
-            'filme3': 'https://drive.google.com/file/d/1Gxehniiui_X855Z2sTZCgdHOd42FnBcD/view?usp=drive_link'
+            // SUBSTITUA ESTE BLOCO NO SEU feedback.html
+const DESTINO_URLS = {
+    // Redireciona para o player.html, passando o ID do filme
+    'filme1': 'player.html?id=filme1', 
+    'filme2': 'player.html?id=filme2',
+    'filme3': 'player.html?id=filme3'
         };
 
         // 1. CAPTURA QUAL FILME O USUÁRIO QUER VER
