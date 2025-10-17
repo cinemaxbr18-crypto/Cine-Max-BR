@@ -126,6 +126,22 @@
             color: var(--secondary-color);
             transform: translateY(-3px);
         }
+
+        /* Ajusta o contêiner principal do vídeo para a largura total da tela */
+.container-do-video { /* Substitua por sua classe/ID real */
+    width: 100% !important; 
+    height: auto !important; /* Permite a altura ser automática */
+}
+
+/* Garante que o iframe/video dentro do contêiner também seja responsivo */
+.container-do-video iframe, 
+.container-do-video video {
+    width: 100% !important;
+    height: 100vh !important; /* 100% da altura da Viewport (tela) */
+    object-fit: contain; /* Ou 'cover', dependendo do efeito que você deseja */
+}
+
+    <iframe src="seu_video.mp4" allowfullscreen></iframe>
     </style>
 </head>
 <body>
